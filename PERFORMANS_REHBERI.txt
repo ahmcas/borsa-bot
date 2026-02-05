@@ -1,0 +1,361 @@
+# ============================================================
+# PERFORMANS TAKİP SİSTEMİ - KULLANIM REHBERİ
+# ============================================================
+# Bu dosya performans takip sisteminin nasıl çalıştığını ve
+# nasıl kullanılacağını detaylıca açıklar.
+# ============================================================
+
+
+# ═══════════════════════════════════════════════════════════
+# SİSTEM NASIL ÇALIŞIR?
+# ═══════════════════════════════════════════════════════════
+
+Her gün bot çalıştığında:
+
+1. ✅ Haber analizi yapar
+2. ✅ Teknik analiz yapar  
+3. ✅ En iyi 1-3 hisseyi seçer
+4. ✅ Mail gönderir
+5. 💾 **YENİ:** Her öneriyi SQLite veritabanına kaydeder
+6. 🔍 **YENİ:** Geçmiş önerilerin 7, 14, 30 gün sonraki performansını kontrol eder
+7. 📊 **YENİ:** Her Pazartesi haftalık performans raporu mail atar
+
+
+# ═══════════════════════════════════════════════════════════
+# VERİTABANI YAPISI
+# ═══════════════════════════════════════════════════════════
+
+Sistem "performance.db" adlı SQLite veritabanı kullanır.
+
+## TABLOLAR:
+
+### 1. recommendations (öneriler)
+Her gün yapılan önerileri saklar:
+- Tarih
+- Hisse ticker
+- Giriş fiyatı
+- Teknik skor
+- Nihai skor
+- Rating (AL, SAT, İZLE)
+- Sektör
+- Destek/Direnç fiyatları
+- Risk/Reward oranı
+- Sinyaller (RSI, MACD, vb)
+
+### 2. performance_results (sonuçlar)
+Her önerinin gerçek sonuçlarını saklar:
+- 7, 14, 30 gün sonraki fiyat
+- Getiri yüzdesi
+- Maksimum/minimum fiyat
+- Direnç/desteğe ulaştı mı?
+- Sonuç (SUCCESS, NEUTRAL, LOSS)
+
+### 3. statistics (istatistikler)
+Dönemsel genel istatistikler:
+- Toplam öneri sayısı
+- Başarı oranı
+- Ortalama getiri
+- En iyi/kötü sektörler
+
+
+# ═══════════════════════════════════════════════════════════
+# BAŞARI KRİTERLERİ
+# ═══════════════════════════════════════════════════════════
+
+Bir öneri 7 gün sonra şu şekilde değerlendirilir:
+
+✅ SUCCESS  → Getiri >= %5
+⚖️ NEUTRAL  → Getiri 0% ile %5 arası
+❌ LOSS     → Getiri < 0%
+
+Neden %5?
+→ Haftalık %5 getiri = Yıllık ~%260 getiri
+→ Bu çok agresif bir hedef ama sistemin kalitesini ölçmek için iyi
+
+
+# ═══════════════════════════════════════════════════════════
+# KULLANIM ÖRNEKLERİ
+# ═══════════════════════════════════════════════════════════
+
+## ÖRNEK 1: Performans Raporunu Görüntüle
+────────────────────────────────────────────
+
+Terminal'de:
+```bash
+python check_performance.py --report --days 30
+```
+
+Çıktı:
+```
+📊 PERFORMANS RAPORU - Son 30 Gün
+══════════════════════════════════════════════
+
+📈 GENEL İSTATİSTİKLER:
+   Toplam Öneri      : 45
+   Kontrol Edilen    : 38
+   Başarılı          : 24 ✅
+   Nötr              : 8 ⚖️
+   Zarar             : 6 ❌
+
+🎯 BAŞARI ORANI:
+   63.2% 🔥 (MÜKEMMEL)
+
+💰 ORTALAMA GETİRİ:
+   +4.8% 📈
+
+🏆 SEKTÖR ANALİZİ:
+   En İyi Sektör     : teknoloji
+   En Kötü Sektör    : finans
+```
+
+
+## ÖRNEK 2: Geçmiş Önerileri Görüntüle
+────────────────────────────────────────────
+
+```bash
+python check_performance.py --history --limit 10
+```
+
+Çıktı:
+```
+📜 ÖNERİ GEÇMİŞİ (Son 10 Öneri)
+
+Tarih        Ticker       Giriş      Rating          Skor   Gün   Çıkış      Getiri     Sonuç
+──────────────────────────────────────────────────────────────────────────────────────────────
+2026-02-03   THYAO.IS     245.50     AL              72     7     268.20     +9.25%     ✅ Başarılı
+2026-02-03   ASELS.IS     180.30     GÜÇLÜ AL        78     7     192.10     +6.54%     ✅ Başarılı
+2026-02-03   NVDA         890.00     AL              65     7     885.00     -0.56%     ❌ Zarar
+2026-02-02   AKBANK.IS    38.50      AL              62     7     39.80      +3.38%     ⚖️  Nötr
+...
+```
+
+
+## ÖRNEK 3: Geçmiş Performansları Yeniden Hesapla
+────────────────────────────────────────────────
+
+Eğer manuel olarak performansları güncellemek isterseniz:
+
+```bash
+python check_performance.py --check
+```
+
+Bu komut:
+- 7, 14, 30 gün önce yapılan önerileri bulur
+- Gerçek piyasa verilerini çeker
+- Performansları hesaplayıp veritabanına kaydeder
+
+
+## ÖRNEK 4: Raporu Email Olarak Gönder
+────────────────────────────────────────────
+
+```bash
+python check_performance.py --report --email --days 30
+```
+
+Bu komut:
+- 30 günlük performans raporunu üretir
+- HTML formatında email hazırlar
+- Gmail'den gönderir
+
+
+## ÖRNEK 5: Backtesting (Geçmişe Dönük Test)
+────────────────────────────────────────────
+
+Sistemi geçmiş verilerde test edin:
+
+```bash
+# Son 60 günü test et
+python backtest.py --days 60
+
+# Belirli tarih aralığı
+python backtest.py --start 2024-06-01 --end 2025-01-01
+
+# Sadece Türk hisseleri
+python backtest.py --days 90 --tickers THYAO.IS ASELS.IS AKBANK.IS
+```
+
+Çıktı örneği:
+```
+🔬 BACKTEST BAŞLATILIYOR
+📅 Tarih Aralığı: 2024-12-01 → 2026-02-01
+📊 Hisse Sayısı: 28
+🗓️  Test edilecek gün sayısı: 45
+
+[1/45] 📅 Test Tarihi: 2024-12-02
+  📊 18 hisse sinyal verdi, 3 seçildi
+  ✅ THYAO.IS      → +8.50% (Skor: 72)
+  ⚖️ AKBANK.IS     → +2.10% (Skor: 65)
+  ❌ NVDA          → -1.20% (Skor: 68)
+...
+
+📊 BACKTEST SONUÇLARI
+══════════════════════════════════════════════
+
+📈 GENEL İSTATİSTİKLER:
+   Toplam İşlem       : 135
+   Başarılı (>=5%)    : 72 (53.3%)
+   Nötr (0-5%)        : 38 (28.1%)
+   Zarar (<0%)        : 25 (18.5%)
+
+🎯 BAŞARI ORANI: 53.33% ✅ İYİ
+
+💰 GETİRİ ANALİZİ:
+   Ortalama Getiri    : +3.45%
+   Başarılı Ort.      : +8.20%
+   Zararlı Ort.       : -4.10%
+   Risk/Reward Ratio  : 2.00
+```
+
+
+# ═══════════════════════════════════════════════════════════
+# OTOMATİK ÇALIŞMA
+# ═══════════════════════════════════════════════════════════
+
+## Günlük Bot Çalıştığında:
+
+1. Önerileri kaydeder (otomatik)
+2. Geçmiş performansları kontrol eder (otomatik)
+3. Her Pazartesi performans raporu mail atar (otomatik)
+
+Hiçbir şey yapmanıza gerek yok!
+
+## Manuel Kontrol İsterseniz:
+
+İstediğiniz zaman:
+```bash
+python check_performance.py --report
+```
+
+Haftalık mail beklemeden raporunuzu alın.
+
+
+# ═══════════════════════════════════════════════════════════
+# PERFORMANSI YORUMLAMA
+# ═══════════════════════════════════════════════════════════
+
+## Başarı Oranı (Win Rate)
+
+70%+     → 🔥 Olağanüstü (çok nadir, şüpheyle yaklaşın)
+60-70%   → ✅ Mükemmel (gerçekçi hedef)
+50-60%   → ✅ İyi (profesyonel seviye)
+40-50%   → ⚠️ Orta (geliştirilmeli)
+<40%     → ❌ Zayıf (sistem revizyonu gerekli)
+
+## Ortalama Getiri
+
++5%+     → Çok iyi (haftalık)
++3-5%    → İyi
++0-3%    → Orta
+Negatif  → Kötü
+
+## Risk/Reward Ratio
+
+3.0+     → Mükemmel
+2.0-3.0  → İyi
+1.5-2.0  → Kabul edilebilir
+<1.5     → Riskli
+
+
+# ═══════════════════════════════════════════════════════════
+# SIK SORULAN SORULAR
+# ═══════════════════════════════════════════════════════════
+
+❓ Performans veritabanı nerede?
+→ /home/claude/performance.db (lokal çalıştırmada)
+→ GitHub Actions'da her çalıştırmada yeniden oluşur
+
+❓ Veritabanını GitHub'a yüklemeli miyim?
+→ Hayır! .gitignore'a ekleyin: performance.db
+→ Hassas verileriniz paylaşılmasın
+
+❓ Backtesting ne kadar sürer?
+→ Her gün ~30 saniye
+→ 90 günlük backtest ~45 dakika
+→ Paralel işlem yaparak hızlandırılabilir
+
+❓ %60 başarı oranı gerçekçi mi?
+→ Evet! Profesyonel trader'lar %50-60 başarı hedefler
+→ Önemli olan Risk/Reward ratio
+
+❓ Sistemin performansı kötüyse ne yapmalıyım?
+→ Skor ağırlıklarını değiştirin (config.py)
+→ Farklı göstergeler ekleyin
+→ Minimum skor threshold'u yükseltin (scorer.py)
+
+❓ Haftalık rapor gelmiyor?
+→ Sadece Pazartesi günleri gönderilir
+→ Manuel göndermek için: check_performance.py --email
+
+
+# ═══════════════════════════════════════════════════════════
+# GELİŞMİŞ KULLANIM
+# ═══════════════════════════════════════════════════════════
+
+## Veritabanını Manuel Yönetme
+
+SQLite GUI kullanarak veritabanını görüntüleyin:
+- DB Browser for SQLite (ücretsiz)
+- SQLiteStudio
+- DBeaver
+
+## Custom Analiz
+
+Python ile:
+```python
+from performance_tracker import PerformanceTracker
+
+tracker = PerformanceTracker()
+
+# Son 60 günün verilerini al
+report = tracker.generate_report(60)
+history = tracker.get_detailed_history(100)
+
+# Custom analiz yapın
+# ...
+```
+
+## Veritabanını Export Etme
+
+CSV'ye export:
+```bash
+sqlite3 performance.db <<EOF
+.headers on
+.mode csv
+.output recommendations.csv
+SELECT * FROM recommendations;
+.output performance_results.csv
+SELECT * FROM performance_results;
+.quit
+EOF
+```
+
+
+# ═══════════════════════════════════════════════════════════
+# ÖNEMLİ NOTLAR
+# ═══════════════════════════════════════════════════════════
+
+⚠️ Geçmiş performans gelecek performansın garantisi değildir!
+⚠️ Her işlemde stop-loss kullanın
+⚠️ Toplam portföyün max %5'ini tek işlemde riske atın
+⚠️ Sistem sadece yön gösterir, karar sizindir
+⚠️ Profesyonel danışman desteği alın
+
+
+# ═══════════════════════════════════════════════════════════
+# ÖZET
+# ═══════════════════════════════════════════════════════════
+
+Performans takip sistemi ile:
+
+✅ Her önerinin gerçek sonucunu görürsünüz
+✅ Sistemin başarı oranını bilirsiniz
+✅ Hangi sektörlerde daha başarılı olduğunuzu anlarsınız
+✅ Geçmişe dönük test yaparak sistem kalitesini ölçersiniz
+✅ Veri bazlı kararlar alırsınız
+
+Bu sayede:
+→ Sisteme güveniniz artar
+→ Zayıf noktaları görüp düzeltirsiniz
+→ Daha bilinçli yatırım yaparsınız
+
+Hayırlı kazançlar! 📈

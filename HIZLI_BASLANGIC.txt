@@ -1,0 +1,140 @@
+# ═══════════════════════════════════════════════════════════
+# 🚀 HIZLI BAŞLANGIÇ - iPhone/iPad için 15 Dakika
+# ═══════════════════════════════════════════════════════════
+
+## ✅ ÖNERİLEN YÖNTEM: GitHub Actions (Tamamen Ücretsiz + Otomatik)
+
+### 📋 Gereksinimler (5 dakika):
+1. ✉️ Gmail hesabı
+2. 🔑 NewsAPI anahtarı → https://newsapi.org/register
+3. 🔐 Gmail App Password → https://myaccount.google.com/apppasswords
+4. 🐙 GitHub hesabı → https://github.com/signup
+
+---
+
+### 🎯 Kurulum Adımları:
+
+#### 1️⃣ GitHub Repo Oluştur (1 dk)
+```
+Safari → github.com → + → New repository
+İsim: borsa-bot
+Public seçili olsun
+✅ Add README
+→ Create repository
+```
+
+#### 2️⃣ Dosyaları Yükle (2 dk)
+```
+borsa_bot_mobil.zip'i çıkar
+GitHub repo → "Add file" → "Upload files"
+Tüm dosyaları sürükle-bırak
+→ Commit changes
+```
+
+#### 3️⃣ Secrets Ekle (3 dk)
+```
+Repo → Settings → Secrets and variables → Actions
+→ New repository secret (4 tane ekle):
+
+1. NEWS_API_KEY       = (newsapi.org'dan aldığınız)
+2. MAIL_SENDER        = sizin@gmail.com
+3. MAIL_PASSWORD      = (gmail app password)
+4. MAIL_RECIPIENT     = alici@gmail.com
+```
+
+#### 4️⃣ Aktif Et ve Çalıştır (1 dk)
+```
+Actions sekmesi → Enable workflows
+Sol menü → Borsa Bot - Günlük Analiz
+→ Run workflow (manuel test)
+```
+
+#### 5️⃣ Sonucu Bekle (5-10 dk)
+```
+✅ Yeşil tik = Başarılı → Mail'inizi kontrol edin!
+❌ Kırmızı X = Hata → Logs'a bakın
+```
+
+---
+
+### ⏰ Otomatik Çalışma:
+Artık her hafta içi sabah **09:00'da** otomatik çalışır.
+iPhone/iPad kapalı olsa da sorun yok!
+
+---
+
+### 📧 Mail İçeriği:
+- 🎯 1-3 adet hisse önerisi
+- 📊 Her hissenin teknik analiz grafiği
+- 📈 RSI, MACD, Bollinger, Fibonacci
+- 💰 Risk/Reward hesabı
+- ✅ Alım sinyalleri
+
+---
+
+### 🔧 Ayarlar Değiştirme:
+
+**Hisse Listesi:**
+```
+GitHub → config.py → Edit (kalem ✏️)
+TURKISH_STOCKS listesini düzenle
+→ Commit changes
+```
+
+**Çalışma Saati:**
+```
+.github/workflows/daily_analysis.yml → Edit
+cron: '0 6 * * 1-5'
+       ↑ 6 = 9:00 TR (UTC+3)
+Değiştir: 5 = 8:00 TR
+```
+
+**Mail Alıcısı:**
+```
+Settings → Secrets → MAIL_RECIPIENT → Update
+```
+
+---
+
+### ❓ Sorun mu Var?
+
+**Mail gelmiyor:**
+- Spam klasörüne bak
+- Gmail App Password doğru mu?
+- Actions'da yeşil tik var mı?
+
+**Hata alıyorsunuz:**
+- Actions → Başarısız çalışma → Logs'u oku
+- Genelde API key hatası olur
+
+**Grafik yok:**
+- Mail'de attachment'ları aç
+- Veya Actions → Artifacts → İndir
+
+---
+
+### 💡 Pro İpuçları:
+
+1. **İlk Çalıştırma:** Manuel "Run workflow" yapın, 10 dk bekleyin
+2. **Test Modu:** Sadece 2 hisse test için → config.py'de ALL_STOCKS'u düzenle
+3. **Push Bildirimi:** IFTTT kullanarak mail → push notification
+4. **Günlük Log:** Actions → Her çalışmanın detayını görebilirsiniz
+5. **Grafikleri Kaydet:** Actions → Artifacts → 7 gün saklanır
+
+---
+
+### 📱 Alternatif: Pythonista ($10)
+
+iPad'de doğrudan çalışır ama:
+- Cihaz açık olmalı
+- Manuel veya Shortcuts ile tetiklenmelidir
+- Detaylar: PYTHONISTA_REHBERI.txt
+
+---
+
+### 🎉 Hazır!
+
+Artık her sabah otomatik borsa analizi alacaksınız.
+Sorularınız için GitHub Issues kullanın.
+
+**Hayırlı işler! 📈**

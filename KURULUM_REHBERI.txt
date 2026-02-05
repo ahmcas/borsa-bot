@@ -1,0 +1,187 @@
+# ============================================================
+# KURULUM & KULLANIM REHBERI
+# ============================================================
+# Bu rehberi tam okuyun, adım adım uygulayın.
+# Her adımda sorun olursa yorum satırlarına bakın.
+# ============================================================
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 1: Python Kurulu Mu Kontrol Et
+# ═══════════════════════════════════════════════════════════
+# Terminal'da:
+#   python --version
+# 3.8 veya üstü olmalı. Yoksa:
+#   https://python.org/downloads/ → indiren yükseltir
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 2: Gerekli Paketleri Kurun
+# ═══════════════════════════════════════════════════════════
+# Terminal'da (borsa_bot klasörünün içinde):
+#
+#   pip install yfinance pandas numpy matplotlib requests schedule
+#
+# Bu komut tüm gerekli paketleri kurar.
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 3: API ANAHTARLARI
+# ═══════════════════════════════════════════════════════════
+
+# --- 3A: NewsAPI Anahtarı (ÜCRETSIZ) ---
+# 1) https://newsapi.org/register  → gidin
+# 2) Email ile kayıt olun
+# 3) Dashboard'da "API Key" yazısını görürsünüz → KOPYALAYIN
+# 4) config.py'deki NEWS_API_KEY = "..." satırına yapıştırın
+# NOT: Ücretsiz plan → 100 çağrı/gün → Bizim için yeterli!
+
+# --- 3B: Alpha Vantage Anahtarı (ÜCRETSIZ) ---
+# (Şu an yfinance kullanıyoruz ama ileride temel analiz için lazım)
+# 1) https://www.alphavantage.co/support/#api-key → gidin
+# 2) Email verin → Anında anahtar verilir
+# 3) config.py'deki ALPHA_VANTAGE_KEY = "..." satırına yapıştırın
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 4: Gmail APP PASSWORD AYARLARI
+# ═══════════════════════════════════════════════════════════
+# Gmail'den email gönderebilmek için:
+#
+# 1) https://myaccount.google.com  → gidin
+# 2) Sol menüdeki "Güvenlik" → tıklayın
+# 3) "2-Adımlı Doğrulama" → AÇIK olmalı (açıksa devam)
+# 4) Aşağı kaydırın → "App Passwords" (Uygulama Şifreleri)
+# 5) "Uygulama" dropdown → "Other (Custom name)"
+# 6) Ad yazın: "BorsaBot"
+# 7) "OLUŞTUR" → 16 haneli şifre çıkar → KOPYALAYIN
+# 8) config.py'deki:
+#      MAIL_SENDER   = "senin@gmail.com"
+#      MAIL_PASSWORD = "16_haneli_app_password"
+#      MAIL_RECIPIENT = "alıcı@gmail.com"  (kendinle aynı olabilir)
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 5: sistemi ÇALŞTIRIN
+# ═══════════════════════════════════════════════════════════
+
+# --- 5A: TEK SEFERLIK ÇALIŞTIRMA (Test) ---
+# python main_bot.py --mode test
+# → Sadece 2 hisseyi test analiz eder, hızlı sonuç verir.
+
+# --- 5B: TEK SEFERLIK TAM ÇALŞTIRMA ---
+# python main_bot.py --mode run
+# → Tüm hisseleri analiz eder, grafik üretir, email atar.
+
+# --- 5C: OTOMATIK (HER GÜN) ÇALŞTIRMA ---
+# python main_bot.py --mode schedule
+# → Ekran açık kaldığı sürece her gün 9:30'da otomatik çalışır.
+# → Durdurmak için: Ctrl + C
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 6: KALICI OTOMATIK ÇALŞTIRMA (Server/VPS)
+# ═══════════════════════════════════════════════════════════
+# Eğer bilgisayarınızı her gün açık bırakmak istemiyorsanız,
+# bir VPS (Virtual Private Server) kullanabilirsiniz.
+#
+# --- SEÇENEK A: Google Colab (Ücretsiz, Basit) ---
+# Limitli ama deneme için iyi. Runtime timeout var.
+#
+# --- SEÇENEK B: Railway.app (En Kolay Deploy) ---
+# 1) https://railway.app → kayıt olun (ücretsiz tier var)
+# 2) GitHub'a kodunuzu pushlayın
+# 3) Railway'de "New Project → Deploy from GitHub"
+# 4) requirements.txt ekleyin (aşağıda var)
+# 5) Environment variables ekleyin (API keys)
+#    Railway Settings → Variables → ekleyin
+#
+# --- SEÇENEK C: Pythonanywhere (Ücretsiz) ---
+# 1) https://www.pythonanywhere.com → kayıt olun
+# 2) Tasks → Always-on task (ücretli plan gerekir)
+# veya
+# 3) Scheduled tasks ile her gün 9:30'da çalıştırın
+#
+# --- SEÇENEK D: GitHub Actions (Ücretsiz, En Güçlü) ---
+# 1) GitHub repo oluşturun
+# 2) .github/workflows/ klasörü oluşturun
+# 3) workflow YAML dosyası ekleyin (aşağıda örnek var)
+# 4) Secrets'e API anahtarlarını ekleyin
+
+
+# ═══════════════════════════════════════════════════════════
+# requirements.txt İÇERİĞİ (Railway/VPS için)
+# ═══════════════════════════════════════════════════════════
+# Aşağıdaki satırları requirements.txt dosyasına yapıştırın:
+#
+# yfinance>=0.2.30
+# pandas>=2.0.0
+# numpy>=1.24.0
+# matplotlib>=3.7.0
+# requests>=2.28.0
+# schedule>=1.2.0
+
+
+# ═══════════════════════════════════════════════════════════
+# GitHub Actions YAML Örneği (.github/workflows/bot.yml)
+# ═══════════════════════════════════════════════════════════
+# name: Borsa Bot Daily Run
+#
+# on:
+#   schedule:
+#     - cron: '0 6 * * 1-5'  # Her hafta gündü 6:00 UTC (Türkiye 9:00)
+#   workflow_dispatch:           # Manual tetikleme de mümkün
+#
+# jobs:
+#   run-bot:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.11'
+#       - name: Install dependencies
+#         run: pip install -r requirements.txt
+#       - name: Run Bot
+#         env:
+#           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+#           MAIL_SENDER: ${{ secrets.MAIL_SENDER }}
+#           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+#           MAIL_RECIPIENT: ${{ secrets.MAIL_RECIPIENT }}
+#         run: python main_bot.py --mode run
+
+
+# ═══════════════════════════════════════════════════════════
+# SIK KARŞILAŞILAN SORUNLAR
+# ═══════════════════════════════════════════════════════════
+
+# ❌ "ModuleNotFoundError: No module named 'yfinance'"
+# → pip install yfinance  (paket kurulu değil)
+
+# ❌ "SMTPAuthenticationError"
+# → Gmail App Password yanlış. Tekrar oluştur.
+# → 2FA Gmail'de açık olmalı.
+
+# ❌ "Empty DataFrame" hata
+# → Yahoo Finance'den veri gelmedi.
+# → Internet bağlantısını kontrol edin.
+# → Hisse ticker yanlış olabilir (örn: THYAO.IS doğru, THYAO yanlış)
+
+# ❌ "NewsAPI 401 Unauthorized"
+# → API Key yanlış. Tekrar kontrol edin.
+
+# ❌ Grafik oluşturmadı
+# → matplotlib kurun: pip install matplotlib
+# → "charts/" klasörü otomatik oluşturulur.
+
+
+# ═══════════════════════════════════════════════════════════
+# SISTEMİ ÖZELLEŞTIRME
+# ═══════════════════════════════════════════════════════════
+
+# 📌 Hisse listesi değiştirmek → config.py → TURKISH_STOCKS / GLOBAL_STOCKS
+# 📌 Mail saati değiştirmek   → config.py → DAILY_RUN_HOUR / DAILY_RUN_MINUTE
+# 📌 Skor ağırlıkları         → config.py → WEIGHT_* değerler
+# 📌 Yeni hisse eklemek       → config.py → listeler ile scorer.py → TICKER_TO_SECTOR
+# 📌 Email alıcısı değiştirmek → config.py → MAIL_RECIPIENT

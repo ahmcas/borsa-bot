@@ -1,0 +1,268 @@
+# ============================================================
+# 📱 iPHONE & iPAD KURULUM REHBERİ
+# ============================================================
+# Bu rehber mobil cihazlarınızdan tüm sistemi kurmak için hazırlandı.
+# Bilgisayara ihtiyacınız YOK! Tamamen ücretsiz.
+# ============================================================
+
+
+# ═══════════════════════════════════════════════════════════
+# 🎯 ÖNEMLİ: Bu Sistem Nasıl Çalışacak?
+# ═══════════════════════════════════════════════════════════
+# 
+# GitHub her gün sabah 9:00'da otomatik olarak:
+# 1. Dünya haberlerini analiz eder
+# 2. Borsa verilerini çeker
+# 3. Teknik analiz yapar
+# 4. Size email atar
+#
+# Siz sadece: mail'inizi kontrol edersiniz!
+# iPhone/iPad her an kapalı olabilir, fark etmez.
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 1: GITHUB HESABI OLUŞTURUN (2 dakika)
+# ═══════════════════════════════════════════════════════════
+
+1. Safari'den https://github.com/signup açın
+2. Email adresinizi girin
+3. Şifre belirleyin (güçlü tutun)
+4. Kullanıcı adı seçin (örn: mehmet_borsa)
+5. Email'inize gelen kodu girin → Hesap hazır!
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 2: REPO (PROJE KLASÖRÜ) OLUŞTURUN (1 dakika)
+# ═══════════════════════════════════════════════════════════
+
+1. GitHub'a giriş yapın
+2. Sağ üstteki "+" simgesine tıklayın
+3. "New repository" seçin
+4. Aşağıdaki bilgileri girin:
+   
+   Repository name: borsa-bot
+   Description: Otomatik borsa analiz sistemi
+   ⚪ Public (seçili olsun)
+   ☑️ Add a README file (işaretleyin)
+   
+5. "Create repository" → Tamam!
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 3: DOSYALARI YÜKLEYIN (3 dakika)
+# ═══════════════════════════════════════════════════════════
+
+Bu adımı yapmak için bilgisayar gerekli. Ama alternatif:
+
+🎁 DAHA KOLAY YOL:
+Ben size hazır GitHub repo linki veriyorum. Onu "Fork" edin:
+
+1. Safari'den bu linke gidin: 
+   https://github.com/anthropic-claude/borsa-bot-template
+   (Not: Bu link örnek, siz kendi reponuza yükleyeceksiniz)
+
+2. Sağ üstteki "Fork" butonuna basın
+3. Kendi hesabınıza kopyalanacak
+
+AMA bu örnekte dosyaları yüklemek için:
+
+A) iPad'den Files uygulaması:
+   - ZIP'i çıkarın
+   - GitHub web sitesini Safari'de açın
+   - Repo sayfasında "Add file" → "Upload files"
+   - Files'tan tüm .py dosyalarını sürükleyin
+   - "Commit changes" → Tamam
+
+B) Veya Working Copy uygulaması (App Store - Ücretsiz):
+   - Working Copy indir
+   - GitHub hesabınızla bağlayın
+   - Repo'yu clone edin
+   - Dosyaları buraya ekleyin
+   - Commit & Push
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 4: API ANAHTARLARI ALIN (5 dakika)
+# ═══════════════════════════════════════════════════════════
+
+📰 4A - NewsAPI Anahtarı (ÜCRETSIZ):
+──────────────────────────────────────
+1. Safari'den https://newsapi.org/register açın
+2. Email ile kayıt olun
+3. Email'inize gelen linke tıklayın
+4. Dashboard'da API Key'i görürsünüz
+5. Kopyalayın (uzun bas → Kopyala)
+   Örnek: a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+6. Not'a yapıştırın (sonra lazım olacak)
+
+
+📧 4B - Gmail App Password (ÜCRETSIZ):
+──────────────────────────────────────
+1. Safari'den https://myaccount.google.com açın
+2. Sol menüden "Güvenlik" → tıklayın
+3. "2 adımlı doğrulama" → AÇIK olmalı
+   (Kapalıysa önce açın)
+4. Aşağı kaydırın → "Uygulama şifreleri"
+5. "Uygulama seç" → "Diğer" yazın: BorsaBot
+6. "Oluştur" → 16 haneli şifre gelir
+   Örnek: abcd efgh ijkl mnop
+7. Kopyalayın, Not'a yapıştırın
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 5: GITHUB SECRETS EKLEYIN (3 dakika)
+# ═══════════════════════════════════════════════════════════
+
+Anahtarları GitHub'a güvenli şekilde ekliyoruz:
+
+1. GitHub'da borsa-bot repo'nuza gidin
+2. "Settings" sekmesine tıklayın
+3. Sol menüden "Secrets and variables" → "Actions"
+4. "New repository secret" butonuna tıklayın
+
+Şimdi DÖRT adet secret ekleyeceğiz:
+
+SECRET #1:
+──────────
+Name: NEWS_API_KEY
+Secret: (NewsAPI'den aldığınız anahtar)
+→ "Add secret"
+
+SECRET #2:
+──────────
+Name: MAIL_SENDER
+Secret: sizin@gmail.com
+→ "Add secret"
+
+SECRET #3:
+──────────
+Name: MAIL_PASSWORD
+Secret: (Gmail'den aldığınız 16 haneli şifre)
+→ "Add secret"
+
+SECRET #4:
+──────────
+Name: MAIL_RECIPIENT
+Secret: alici@gmail.com (kendiniz olabilir)
+→ "Add secret"
+
+✅ Dört secret eklendiyse tamam!
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 6: WORKFLOW'U AKTİF EDİN (1 dakika)
+# ═══════════════════════════════════════════════════════════
+
+1. Repo'nun üst menüsünde "Actions" sekmesine tıklayın
+2. Yeşil buton: "I understand my workflows, go ahead and enable them"
+3. Sol tarafta "Borsa Bot - Günlük Analiz" görünecek
+4. Tıklayın → Sağ tarafta "Run workflow" butonu
+5. "Run workflow" → "Run workflow" (yeşil buton)
+
+🎉 İlk analiz çalışmaya başladı!
+
+Durumu görmek için:
+- Sarı daire = çalışıyor
+- Yeşil tik = başarılı
+- Kırmızı X = hata var
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 7: OTOMATİK ÇALIŞTIRMAYI KONTROL EDİN
+# ═══════════════════════════════════════════════════════════
+
+Artık sistem her gün sabah 9:00'da otomatik çalışacak.
+
+Test için manuel çalıştırdık (Adım 6).
+5-10 dakika içinde mail gelecek.
+
+📧 Mail gelmezse:
+- Gmail'de Spam klasörünü kontrol edin
+- GitHub Actions'da "Logs" tıklayarak hatayı görün
+
+
+# ═══════════════════════════════════════════════════════════
+# 📱 MOBİL KULLANIM İPUÇLARI
+# ═══════════════════════════════════════════════════════════
+
+✅ Her sabah mail gelecek → Öneri hisseleri göreceksiniz
+✅ Grafikleri mail'de göreceksiniz (attachment olarak)
+✅ iPhone/iPad kapalı olsa da sistem çalışır
+✅ İstediğiniz zaman manuel çalıştırabilirsiniz:
+   GitHub → Actions → Run workflow
+
+🔧 Hisse listesi değiştirmek için:
+   1. GitHub'da config.py dosyasını açın
+   2. Sağ üstteki kalem ikonuna tıklayın (Edit)
+   3. TURKISH_STOCKS veya GLOBAL_STOCKS listesini düzenleyin
+   4. "Commit changes"
+
+📊 Sonuçları görmek için:
+   - Mail'inizi kontrol edin
+   - GitHub Actions'da "Artifacts" bölümünden grafikleri indirin
+
+
+# ═══════════════════════════════════════════════════════════
+# SIK SORULAN SORULAR
+# ═══════════════════════════════════════════════════════════
+
+❓ Mail gelmiyor?
+→ Spam klasörünü kontrol edin
+→ MAIL_SENDER ve MAIL_PASSWORD doğru mu?
+→ Gmail App Password kullanıyor musunuz? (Normal şifre ÇALIŞMAZ)
+
+❓ GitHub Actions hata veriyor?
+→ Actions sekmesinde → Kırmızı X → Tıklayın → Logs'u okuyun
+→ Genelde API anahtarı yanlış olur
+
+❓ Hangi hisseleri analiz ediyor?
+→ config.py dosyasında TURKISH_STOCKS ve GLOBAL_STOCKS listesi var
+→ Dilediğiniz hisseyi ekleyin/çıkarın
+
+❓ Saat 9'dan farklı saatte çalışsın?
+→ .github/workflows/daily_analysis.yml dosyasını düzenleyin
+→ cron: '0 6 * * 1-5'  → Saat 6 UTC (TR 9:00)
+→ cron: '30 5 * * 1-5' → Saat 5:30 UTC (TR 8:30)
+
+❓ Ücretsiz mi kalır?
+→ EVET! GitHub Actions ayda 2000 dakika ücretsiz
+→ Bu bot günde ~5 dakika kullanır = 150 dakika/ay
+→ Tamamen limitin içinde
+
+
+# ═══════════════════════════════════════════════════════════
+# 🎁 BONUS: PUSH BİLDİRİMİ ALMAK İSTERSENİZ
+# ═══════════════════════════════════════════════════════════
+
+Mail yerine iPhone/iPad'e push bildirimi:
+
+1. IFTTT uygulamasını indirin (App Store - Ücretsiz)
+2. Gmail + Notifications entegrasyonu kurun:
+   IF: Gmail'e yeni mail gelirse (subject: "Borsa Analiz")
+   THEN: iPhone'a bildirim gönder
+
+Veya Pushover uygulaması (daha güçlü):
+1. Pushover uygulamasını indirin ($5 - tek seferlik)
+2. mail_sender.py'ye Pushover entegrasyonu ekleyin
+3. Mail yerine push gelir
+
+
+# ═══════════════════════════════════════════════════════════
+# SON NOT
+# ═══════════════════════════════════════════════════════════
+
+✅ Kurulum tamamlandıysa artık her sabah otomatik analiz alacaksınız
+✅ Hiçbir şey yapmanıza gerek yok
+✅ iPhone/iPad kapalı olabilir
+✅ Tamamen ücretsiz
+✅ İstediğiniz zaman GitHub'dan güncelleyebilirsiniz
+
+🚀 Hayırlı kazançlar!
+
+
+# ═══════════════════════════════════════════════════════════
+# DESTEK GEREKİRSE
+# ═══════════════════════════════════════════════════════════
+
+GitHub Issues'da soru sorabilirsiniz:
+https://github.com/[sizin-kullanici-adiniz]/borsa-bot/issues

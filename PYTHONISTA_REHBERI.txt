@@ -1,0 +1,168 @@
+# ============================================================
+# 📱 YÖNTEM 2: PYTHONISTA (iPad Üzerinde Doğrudan Çalıştırma)
+# ============================================================
+# Bu yöntem iPad'inizde Python kodunu doğrudan çalıştırır.
+# GitHub'a ihtiyaç yok ama uygulama ücretli ($10).
+# ============================================================
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 1: PYTHONISTA UYGULAMASINI İNDİRİN
+# ═══════════════════════════════════════════════════════════
+
+1. App Store'u açın
+2. "Pythonista 3" aratın (OMZ:Software)
+3. Satın alın: $9.99 (tek seferlik, abonelik değil)
+4. İndirin ve açın
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 2: GEREKLI PAKETLERİ KURUN
+# ═══════════════════════════════════════════════════════════
+
+Pythonista içinde bazı paketler hazır gelir ama eksikler var.
+
+1. Pythonista'yı açın
+2. Sağ üstteki "+" → "New File" → "setup.py"
+3. Aşağıdaki kodu yapıştırın:
+
+```python
+import subprocess
+import sys
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# Gerekli paketler
+packages = [
+    'yfinance',
+    'requests',
+    'schedule',
+]
+
+for pkg in packages:
+    print(f"Kuruluyor: {pkg}")
+    try:
+        install(pkg)
+        print(f"✅ {pkg} kuruldu")
+    except Exception as e:
+        print(f"❌ {pkg} hata: {e}")
+```
+
+4. Çalıştırın (▶️ butonu)
+5. Tüm paketler kurulacak
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 3: BOT DOSYALARINI EKLEYİN
+# ═══════════════════════════════════════════════════════════
+
+ZIP'ten çıkardığınız tüm .py dosyalarını Pythonista'ya aktarın:
+
+YÖNTEM A - iCloud Drive üzerinden:
+1. Files uygulamasında ZIP'i çıkarın
+2. Tüm .py dosyalarını seçin
+3. Paylaş → "Copy to Pythonista"
+
+YÖNTEM B - Manuel:
+1. Her dosyayı Files'tan açın
+2. İçeriği kopyalayın
+3. Pythonista'da yeni dosya oluşturun
+4. Yapıştırın
+
+Sonuçta şu dosyalar olmalı:
+- config.py
+- news_analyzer.py
+- technical_analyzer.py
+- chart_generator.py
+- scorer.py
+- mail_sender.py
+- main_bot.py
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 4: CONFIG.PY'Yİ DÜZENLEYİN
+# ═══════════════════════════════════════════════════════════
+
+Pythonista'da config.py'yi açın ve şunları doldurun:
+
+NEWS_API_KEY = "sizin_news_api_anahtarınız"
+MAIL_SENDER = "sizin@gmail.com"
+MAIL_PASSWORD = "gmail_app_password"
+MAIL_RECIPIENT = "alici@gmail.com"
+
+Kaydedin (Cmd+S veya sağ üst menü)
+
+
+# ═══════════════════════════════════════════════════════════
+# ADIM 5: BOT'U ÇALŞTIRIN
+# ═══════════════════════════════════════════════════════════
+
+1. Pythonista'da main_bot.py'yi açın
+2. ▶️ butonuna basın
+3. Konsol'da işlem adımlarını göreceksiniz
+4. 5-10 dakika içinde analiz tamamlanır
+5. Mail'inizi kontrol edin!
+
+
+# ═══════════════════════════════════════════════════════════
+# OTOMATİK ÇALŞTIRMA (Shortcuts ile)
+# ═══════════════════════════════════════════════════════════
+
+iOS Shortcuts uygulamasını kullanarak her gün otomatik çalıştırabilirsiniz:
+
+1. Shortcuts uygulamasını açın
+2. "+" → Yeni Shortcut
+3. "Eylem Ekle"
+4. "Pythonista" aratın → "Run Script" seçin
+5. Script seç → "main_bot.py"
+6. Sağ üstten "..." → "Otomasyon"
+7. "Personal Automation" → "Time of Day"
+8. Saat 9:00, Her Gün, Hafta İçi
+9. "Done"
+
+⚠️ DİKKAT: iPad/iPhone'un açık olması gerekir!
+Bu yöntemde cihaz kapalıysa çalışmaz.
+
+
+# ═══════════════════════════════════════════════════════════
+# YÖNTEM 2'NİN ARTI VE EKSİLERİ
+# ═══════════════════════════════════════════════════════════
+
+✅ ARTI:
+- iPad'de her şey çalışır
+- İnternet varken her yerde kullanabilirsiniz
+- Kodları görebilir, anlık düzenleyebilirsiniz
+- GitHub bilgisi gerektirmez
+
+❌ EKSİ:
+- Ücretli uygulama ($10)
+- Otomatik çalıştırma için iPad açık olmalı
+- Pil tüketir (charge'da bırakın)
+- Büyük veri çekimlerde yavaş olabilir
+
+
+# ═══════════════════════════════════════════════════════════
+# SONUÇ: HANGİ YÖNTEM DAHA İYİ?
+# ═══════════════════════════════════════════════════════════
+
+📊 YÖNTEM 1 (GitHub Actions) - ÖNERİLEN
+✅ Tamamen ücretsiz
+✅ Cihaz kapalı olsa da çalışır
+✅ Sıfır bakım gerektirir
+✅ Her gün garantili çalışır
+❌ Kurulum biraz daha uzun
+
+📱 YÖNTEM 2 (Pythonista) - İLERİ SEVİYE
+✅ Kodları görebilir/düzenleyebilirsiniz
+✅ Anlık test yapabilirsiniz
+✅ Internet varsa her yerden çalışır
+❌ Ücretli uygulama
+❌ Cihaz açık olmalı
+❌ Pil tüketir
+
+
+BENİM TAVSİYEM:
+→ İlk başta GitHub Actions (Yöntem 1) ile başlayın
+→ Sistem çalışırken öğrenmek isterseniz Pythonista alın
+→ İkisini birlikte kullanabilirsiniz!
