@@ -25,7 +25,7 @@ from technical_analyzer import analyze_all_stocks
 from scorer import select_top_stocks, generate_recommendation_text
 from chart_generator import generate_all_charts
 from mail_sender import generate_html_body, send_email
-from performance_tracker import PerformanceTracker, generate_performance_email
+#from performance_tracker import PerformanceTracker, generate_performance_email
 
 
 def run_full_analysis():
@@ -125,47 +125,12 @@ def run_full_analysis():
     except Exception as e:
         print(f"  ❌ Email hatası: {e}")
         success = False
-
+        
     # ─── STEP 6: PERFORMANS TAKİBİ ─────────────────────────
     print("\n📊 ADIM 6: Performans takibi...")
     print("-" * 50)
-
-    try:
-        tracker = PerformanceTracker()
-        
-        # Bugünün önerilerini kaydet
-        for rec in selected:
-            rec_id = tracker.save_recommendation(rec)
-            print(f"  💾 {rec['ticker']} kaydedildi (ID: {rec_id})")
-        
-        # Geçmiş önerilerin performansını kontrol et
-        print("\n  🔍 Geçmiş performanslar kontrol ediliyor...")
-        perf_results = tracker.check_performance([7, 14, 30])
-        
-        if perf_results:
-            print(f"  ✅ {len(perf_results)} yeni performans hesaplandı")
-            
-            # Haftalık performans raporu üret (her Pazartesi)
-            if datetime.now().weekday() == 0:  # Pazartesi
-                print("\n  📈 Haftalık performans raporu gönderiliyor...")
-                report = tracker.generate_report(30)
-                history = tracker.get_detailed_history(20)
-                
-                perf_html = generate_performance_email(report, history)
-                send_email(
-                    perf_html, 
-                    subject=f"📊 Haftalık Performans Raporu - {datetime.now().strftime('%d %b %Y')}"
-                )
-                print(f"  ✅ Performans raporu gönderildi!")
-                print(f"     Başarı Oranı: {report['win_rate']}%")
-                print(f"     Ort. Getiri: {report['avg_return_pct']:+.2f}%")
-        else:
-            print("  ℹ️  Henüz kontrol edilecek geçmiş öneri yok")
-    
-    except Exception as e:
-        print(f"  ❌ Performans takip hatası: {e}")
-        import traceback
-        traceback.print_exc()
+    print("  ℹ️  Performans takibi geçici olarak devre dışı")
+    # Geçici olarak kapatıldı - veritabanı hatası düzeltilecek
 
     # ─── SUMMARY ────────────────────────────────────────────
     print("\n" + "=" * 65)
