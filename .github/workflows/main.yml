@@ -26,4 +26,4 @@ jobs:
 
       - name: Botu çalıştır
         run: |
-          python main_bot.py
+          python main_bot.py --mode run
