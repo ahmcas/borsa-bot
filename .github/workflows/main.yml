@@ -7,8 +7,43 @@ on:
       - main
 
 jobs:
-  test:
+  analiz:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Test adımı
-        run: echo "GitHub Actions çalışıyor ✅"
+      - name: Repo dosyalarını çek
+        uses: actions/checkout@v4
+
+      - name: Çalışma dizinini göster
+        run: |
+          echo "Bulunulan dizin:"
+          pwd
+          echo "Dosyalar:"
+          ls -la
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Python versiyon kontrol
+        run: python --version
+
+      # Eğer requirements.txt varsa otomatik kurar
+      - name: Gerekli kütüphaneleri kur
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "requirements.txt yok, atlandı"
+          fi
+
+      # 👉 BURAYI DOSYA ADINA GÖRE DEĞİŞTİREBİLİRSİN
+      - name: Analiz scriptini çalıştır
+        run: |
+          if [ -f analiz.py ]; then
+            python analiz.py
+          else
+            echo "analiz.py bulunamadı ❌"
+            exit 1
+          fi
