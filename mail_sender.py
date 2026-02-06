@@ -4,7 +4,7 @@
 # Bu modül:
 # 1) Analiz sonuçlarını HTML email'e formatlar
 # 2) Her alınan grafik dosyasını mail'e ekler
-# 3) Gmail SMTP üzerinden gönderir
+# 3) Outlook / Hotmail SMTP üzerinden gönderir
 # ============================================================
 
 import smtplib
@@ -219,7 +219,7 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
 def send_email(html_body: str, chart_paths: list = None,
                subject: str = None) -> bool:
     """
-    Email'i Gmail SMTP üzerinden gönderir.
+    Email'i Outlook / Hotmail SMTP üzerinden gönderir.
     Grafikleri attachment olarak ekler.
     """
     if subject is None:
@@ -254,7 +254,7 @@ def send_email(html_body: str, chart_paths: list = None,
                     print(f"  📎 Grafik eklendi: {filename}")
 
         # SMTP bağlantı
-        smtp_server = "smtp.gmail.com"
+        smtp_server = "smtp.office365.com"
         smtp_port = 587
 
         with smtplib.SMTP(smtp_server, smtp_port) as server:
@@ -270,8 +270,8 @@ def send_email(html_body: str, chart_paths: list = None,
         return True
 
     except smtplib.SMTPAuthenticationError:
-        print("❌ Mail hata: Gmail kimlik doğrulama başarısız.")
-        print("   → Gmail'de App Password oluşturduğunuzdan emin olun.")
+        print("❌ Mail hata: Outlook / Hotmail kimlik doğrulama başarısız.")
+        print("   → Mail adresi ve şifreyi kontrol edin.")
         return False
     except smtplib.SMTPException as e:
         print(f"❌ SMTP hata: {e}")
