@@ -13,7 +13,7 @@ except ImportError:
 def generate_html_body(recommendations: dict, chart_paths: list) -> str:
     recs = recommendations.get("recommendations", [])
     date_str = datetime.now().strftime("%d %B %Y %H:%M")
-
+    
     body = f"""
     <html>
     <body style="font-family: Arial, sans-serif; color: #333;">
@@ -21,12 +21,10 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
             <h1 style="margin: 0;">Borsa Analiz Raporu</h1>
             <p style="margin: 5px 0;">{date_str} | Algoritmik Tarama</p>
         </div>
-        
         <div style="background: #e7f3ff; border-left: 5px solid #2196F3; padding: 15px; margin: 20px;">
-            <strong>Puan Açıklaması:</strong> Bu puan, hisselerin teknik gücünü 0-100 arasında özetler. 
+            <strong>Puan Açıklaması:</strong> Bu skor (0-100), hisselerin teknik gücünü özetler. 
             Algoritmayı bilmeyen birinin bile piyasa durumunu tek bakışta anlamasını sağlayan bir göstergedir.
         </div>
-
         <div style="padding: 0 20px;">
     """
     if recs:
@@ -39,8 +37,8 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
             </div>
             """
     else:
-        body += "<p>Uygun alım sinyali bulunamadı.</p>"
-
+        body += "<p>Bugün uygun alım sinyali bulunamadı.</p>"
+    
     body += """
         </div>
         <div style="background: #f8f9fa; padding: 20px; text-align: center; font-size: 11px; color: #666;">
