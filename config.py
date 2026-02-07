@@ -1,15 +1,15 @@
 import os
 
-# GitHub Secrets ile tam uyumlu isimler
+# GitHub Secrets ile birebir aynı isimler korunmuştur
 SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "")
 NEWS_API_KEY = os.environ.get("NEWS_API_KEY", "")
 ALPHA_VANTAGE_KEY = os.environ.get("ALPHA_VANTAGE_KEY", "")
 
-# Mail Ayarları
+# Mail Ayarları (Yeni Gmail adresinizle)
 MAIL_SENDER = os.environ.get("MAIL_SENDER", "ahm.cagil@gmail.com")
 MAIL_RECIPIENT = os.environ.get("MAIL_RECIPIENT", "ahm.cagil@gmail.com")
 
-# Borsa Kodları (Düzeltilmiş Liste)
+# Borsa Kodları (ISA -> ISCTR gibi düzeltmeler yapıldı)
 TURKISH_STOCKS = [
     "THYAO.IS", "ASELS.IS", "AKBANK.IS", "ISCTR.IS", "GARAN.IS", 
     "AKSEN.IS", "TUPRS.IS", "BIMAS.IS", "ENKAI.IS", "SISE.IS", 
