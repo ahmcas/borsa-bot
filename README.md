@@ -265,6 +265,6 @@ Faydalı bulduysanız ⭐ verin, arkadaşlarınızla paylaşın!
 
 ---
 
-**Yapımcı:** Ahmet Çağıl
+**Yapımcı:** Ahmet Çağıl    
 **Versiyon:** 1.0  
 **Son Güncelleme:** Şubat 2026
