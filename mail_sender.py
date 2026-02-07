@@ -1,19 +1,25 @@
 # ============================================================
-# mail_sender.py — Email Gönderim Sistemi
+# mail_sender.py — Email Gönderim Sistemi (SendGrid)
 # ============================================================
 # Bu modül:
 # 1) Analiz sonuçlarını HTML email'e formatlar
 # 2) Her alınan grafik dosyasını mail'e ekler
-# 3) Gmail SMTP üzerinden gönderir
+# 3) SendGrid API üzerinden gönderir
 # ============================================================
 
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from datetime import datetime
 import os
+from datetime import datetime
+import base64
 import config
+
+# SendGrid import
+try:
+    import sendgrid
+    from sendgrid.helpers.mail import Mail, Email, To, Content, Attachment, FileContent, FileName, FileType, Disposition
+    SENDGRID_AVAILABLE = True
+except ImportError:
+    SENDGRID_AVAILABLE = False
+    print("⚠️  SendGrid yüklü değil, pip install sendgrid ile yükleyin")
 
 
 def generate_html_body(recommendations: dict, chart_paths: list) -> str:
@@ -62,8 +68,6 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
         .rr-value { font-size: 16px; font-weight: 800; }
         .rr-risk .rr-value { color: #dc2626; }
         .rr-reward .rr-value { color: #16a34a; }
-        .chart-container { margin: 10px 0; text-align: center; }
-        .chart-container img { max-width: 100%; border-radius: 8px; }
         .no-stocks { background: #fef3c7; border: 1px solid #fbbf24; border-radius: 10px; padding: 20px; text-align: center; }
         .no-stocks p { color: #92400e; font-weight: 600; margin: 0; }
         .footer { background: #f1f5f9; padding: 18px 24px; text-align: center; border-top: 1px solid #e2e8f0; }
@@ -171,19 +175,6 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
         </div>
         """
 
-    # --- CHARTS (inline as references) ---
-    chart_note = ""
-    if chart_paths:
-        chart_note = f"""
-        <div class="section">
-            <div class="section-title">📈 Teknik Analiz Grafikler</div>
-            <p style="color:#64748b; font-size:13px; margin:0;">
-                Aşağıda önerilen hisselerin detaylı teknik analiz grafikler yer almaktadır.<br>
-                Grafiklerde: Fiyat + Bollinger Band + Fibonacci + MACD + RSI gösterilmiştir.
-            </p>
-        </div>
-        """
-
     # --- FOOTER ---
     footer = """
     <div class="footer">
@@ -206,7 +197,6 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
             {header}
             {mood}
             {rec_section}
-            {chart_note}
             {footer}
         </div>
     </body>
@@ -216,66 +206,69 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
     return full_html
 
 
-def send_email(html_body: str, chart_paths: list = None,
-               subject: str = None) -> bool:
+def send_email(html_body: str, chart_paths: list = None, subject: str = None) -> bool:
     """
-    Email'i Gmail SMTP üzerinden gönderir.
-    Grafikleri attachment olarak ekler.
+    Email'i SendGrid API üzerinden gönderir.
     """
+    if not SENDGRID_AVAILABLE:
+        print("❌ SendGrid paketi yüklü değil!")
+        return False
+    
     if subject is None:
         subject = f"📊 Borsa Analiz Raporu - {datetime.now().strftime('%d %b %Y')}"
-
+    
+    # SendGrid API Key
+    sendgrid_api_key = os.environ.get("SENDGRID_API_KEY", config.SENDGRID_API_KEY if hasattr(config, 'SENDGRID_API_KEY') else None)
+    
+    if not sendgrid_api_key:
+        print("❌ SENDGRID_API_KEY bulunamadı!")
+        return False
+    
     try:
-        # MIME message oluştur
-        msg = MIMEMultipart("mixed")
-        msg["From"] = config.MAIL_SENDER
-        msg["To"] = config.MAIL_RECIPIENT
-        msg["Subject"] = subject
-
-        # HTML body ekle
-        html_part = MIMEText(html_body, "html")
-        msg.attach(html_part)
-
+        # SendGrid client
+        sg = sendgrid.SendGridAPIClient(api_key=sendgrid_api_key)
+        
+        # Email oluştur
+        from_email = Email(os.environ.get("MAIL_SENDER", config.MAIL_SENDER))
+        to_email = To(os.environ.get("MAIL_RECIPIENT", config.MAIL_RECIPIENT))
+        content = Content("text/html", html_body)
+        
+        mail = Mail(from_email, to_email, subject, content)
+        
         # Grafikleri ekle
         if chart_paths:
             for chart_path in chart_paths:
                 if os.path.exists(chart_path):
-                    with open(chart_path, "rb") as img_file:
-                        img_data = img_file.read()
-
-                    # Image MIME
-                    img_mime = MIMEImage(img_data, _subtype="png")
+                    with open(chart_path, 'rb') as f:
+                        data = f.read()
+                    
+                    encoded = base64.b64encode(data).decode()
                     filename = os.path.basename(chart_path)
-                    img_mime.add_header(
-                        "Content-Disposition",
-                        f"attachment; filename={filename}"
-                    )
-                    msg.attach(img_mime)
+                    
+                    attachment = Attachment()
+                    attachment.file_content = FileContent(encoded)
+                    attachment.file_type = FileType('image/png')
+                    attachment.file_name = FileName(filename)
+                    attachment.disposition = Disposition('attachment')
+                    
+                    mail.add_attachment(attachment)
                     print(f"  📎 Grafik eklendi: {filename}")
-
-        # SMTP bağlantı
-        smtp_server = "smtp.gmail.com"
-        smtp_port = 587
-
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.ehlo()
-            server.starttls()  # Güvenli bağlantı
-            server.ehlo()
-            server.login(config.MAIL_SENDER, config.MAIL_PASSWORD)
-            server.sendmail(config.MAIL_SENDER, config.MAIL_RECIPIENT, msg.as_string())
-
-        print(f"\n✅ Email başarıyla gönderildi!")
-        print(f"   📧 Alıcı: {config.MAIL_RECIPIENT}")
-        print(f"   📌 Konu: {subject}")
-        return True
-
-    except smtplib.SMTPAuthenticationError:
-        print("❌ Mail hata: Gmail kimlik doğrulama başarısız.")
-        print("   → Gmail'de App Password oluşturduğunuzdan emin olun.")
-        return False
-    except smtplib.SMTPException as e:
-        print(f"❌ SMTP hata: {e}")
-        return False
+        
+        # Gönder
+        response = sg.client.mail.send.post(request_body=mail.get())
+        
+        if response.status_code in [200, 201, 202]:
+            print(f"\n✅ Email başarıyla gönderildi!")
+            print(f"   📧 Alıcı: {to_email.email}")
+            print(f"   📌 Konu: {subject}")
+            return True
+        else:
+            print(f"❌ SendGrid hata kodu: {response.status_code}")
+            print(f"   Body: {response.body}")
+            return False
+    
     except Exception as e:
-        print(f"❌ Email gönderim genel hata: {e}")
+        print(f"❌ Email gönderim hatası: {e}")
+        import traceback
+        traceback.print_exc()
         return False
