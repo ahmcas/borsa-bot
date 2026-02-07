@@ -12,9 +12,9 @@ ALPHA_VANTAGE_KEY = os.environ.get("ALPHA_VANTAGE_KEY", "YOUR_ALPHA_VANTAGE_KEY_
 SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "YOUR_SENDGRID_API_KEY_HERE")
 
 # --- MAIL AYARLARI ---
-# İsteğiniz üzerine adresler ahm.cagil@hotmail.com olarak güncellendi
-MAIL_SENDER = os.environ.get("MAIL_SENDER", "ahm.cagil@hotmail.com")
-MAIL_RECIPIENT = os.environ.get("MAIL_RECIPIENT", "ahm.cagil@hotmail.com")
+# İsteğiniz üzerine adresler ahm.cagil@gmail.com olarak güncellendi
+MAIL_SENDER = os.environ.get("MAIL_SENDER", "ahm.cagil@gmail.com")
+MAIL_RECIPIENT = os.environ.get("MAIL_RECIPIENT", "ahm.cagil@gmail.com")
 
 # --- BORSALAR & HISSELER ---
 TURKISH_STOCKS = [
