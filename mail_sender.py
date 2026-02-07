@@ -81,16 +81,9 @@ def send_email(html_body: str, chart_paths: list = None, subject: str = None) ->
                         Disposition('attachment')
                     )
                     mail.add_attachment(attachment)
-                    print(f"Grafik eklendi: {os.path.basename(path)}")
-
     try:
         response = sg.send(mail)
-        if response.status_code in [200, 201, 202]:
-            print(f"Email başarıyla gönderildi! Alıcı: {to_addr}")
-            return True
-        else:
-            print(f"X SendGrid hata kodu: {response.status_code}")
-            return False
+        return response.status_code in [200, 201, 202]
     except Exception as e:
         print(f"X Gönderim hatası: {e}")
         return False
