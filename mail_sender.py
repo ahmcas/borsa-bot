@@ -1,122 +1,125 @@
 import os
-from datetime import datetime
 import base64
+from datetime import datetime
 import config
 
-# SendGrid import
+# SendGrid kütüphanesi kontrolü
 try:
     import sendgrid
     from sendgrid.helpers.mail import Mail, Email, To, Content, Attachment, FileContent, FileName, FileType, Disposition
     SENDGRID_AVAILABLE = True
 except ImportError:
     SENDGRID_AVAILABLE = False
-    print("! SendGrid yüklü değil, pip install sendgrid ile yükleyin")
 
 def generate_html_body(recommendations: dict, chart_paths: list) -> str:
-    """
-    Sade ve anlaşılır HTML mail body üretir.
-    """
+    """Sade, anlaşılır ve istenen açıklamaları içeren HTML mail gövdesi üretir."""
     market_mood = recommendations.get("market_mood", "Belirsiz")
     recs = recommendations.get("recommendations", [])
     date_str = datetime.now().strftime("%d %B %Y %H:%M")
 
-    # CSS Stilleri
+    # CSS Tasarımı
     css = """
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
-        .container { max-width: 700px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #1a2e3e, #16213e); padding: 30px; text-align: center; color: #fff; }
-        .header h1 { margin: 0 0 6px; font-size: 24px; }
-        .info-box { background: #e0f2fe; padding: 15px; margin: 20px; border-left: 5px solid #0369a1; font-size: 14px; color: #0c4a6e; border-radius: 4px; }
-        .mood-bar { background: #1e293b; padding: 14px; text-align: center; color: #2e8f0; font-weight: 600; }
-        .section { padding: 22px 24px; }
-        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
-        .ticker-name { font-size: 20px; font-weight: 800; color: #1e293b; }
-        .rating-box { display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: bold; margin-top: 5px; }
-        .rating-strong-buy { background: #dcfce7; color: #166534; }
-        .rating-buy { background: #dbeafe; color: #1e40af; }
-        .rating-hold { background: #fef3c7; color: #92400e; }
-        .footer { background: #f1f5f9; padding: 20px; text-align: center; font-size: 11px; color: #64748b; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 650px; margin: 0 auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .header { background: #1a2e3e; padding: 25px; text-align: center; color: #ffffff; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px; margin: 20px; font-size: 14px; color: #0d47a1; }
+        .mood-bar { background: #333; color: #00ff00; text-align: center; padding: 10px; font-weight: bold; }
+        .section { padding: 20px; }
+        .card { border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: #fafafa; }
+        .ticker { font-size: 22px; font-weight: bold; color: #1a2e3e; }
+        .rating { display: inline-block; padding: 3px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-top: 5px; }
+        .rating-strong { background: #d4edda; color: #155724; }
+        .rating-buy { background: #cce5ff; color: #004085; }
+        .rating-hold { background: #fff3cd; color: #856404; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; font-size: 11px; color: #6c757d; border-top: 1px solid #eee; }
     </style>
     """
 
-    # 1. Puan Açıklaması (İsteğiniz üzerine en başa eklendi)
-    explanation_header = """
+    # 1. [span_0](start_span)[span_1](start_span)Puan Açıklaması (Mailin başında yer alacak)[span_0](end_span)[span_1](end_span)
+    explanation_box = """
     <div class="info-box">
-        <strong>Puanlama Sistemi Açıklaması:</strong><br>
-        Bu rapor, teknik göstergeler, hacim verileri ve fiyat hareketlerini 0-100 arası bir puana dönüştürerek hisselerin kısa vadeli potansiyelini ölçer.
+        <strong>Puan Açıklaması:</strong> Algoritma; teknik analiz, hacim ve trend verilerini harmanlayarak her hisseye 0-100 arası bir başarı skoru atar.
         <br><br>
-        <em>Bilgilendirme: Bu sistem, algoritmayı hiç bilmeyenler için karmaşık verileri tek bir başarı skoruna indirgeyen "Algoritmik Tarama" modelidir.</em>
+        <em>Bu sistem, algoritmayı hiç bilmeyen birinin bile anlayacağı şekilde, hisselerin teknik gücünü tek bir puanla özetleyen bir bilgilendirme sistemidir.</em>
     </div>
     """
 
-    header = f"""
+    header_html = f"""
     <div class="header">
-        <h1>Borsa Analiz Raporu</h1>
-        <p>{date_str} | Günlük Analiz</p>
+        <h1 style="margin:0;">Borsa Analiz Raporu</h1>
+        <p style="margin:5px 0 0 0; opacity:0.8;">{date_str} | Algoritmik Tarama</p>
     </div>
     """
 
     mood_html = f'<div class="mood-bar">Piyasa Duygusu: {market_mood}</div>'
 
-    # Önerilen Hisseler Bölümü
-    rec_section = ""
+    # Önerilen Hisseler
+    rec_html = ""
     if recs:
         cards = ""
         for rec in recs:
-            rating_text = rec.get("rating", "TUT")
-            rating_class = "rating-strong-buy" if "GÜÇLÜ" in rating_text else "rating-buy" if "AL" in rating_text else "rating-hold"
+            rating = rec.get("rating", "TUT")
+            r_class = "rating-strong" if "GÜÇLÜ" in rating else "rating-buy" if "AL" in rating else "rating-hold"
             
             cards += f"""
             <div class="card">
-                <div class="ticker-name">#{rec.get('rank', '-')} {rec.get('ticker', 'N/A')}</div>
-                <div class="rating-box {rating_class}">{rating_text}</div>
-                <p><strong>Sektör:</strong> {rec.get('sector', 'Bilinmiyor')}</p>
-                <p><strong>Fiyat:</strong> {rec.get('price', '0.00')} | <strong>Skor:</strong> {rec.get('score', 0)}/100</p>
+                <div class="ticker">#{rec.get('rank', '0')} {rec.get('ticker', 'N/A')}</div>
+                <div class="rating {r_class}">{rating}</div>
+                <div style="margin-top:10px; color:#555;">
+                    <b>Piyat:</b> {rec.get('price', '-')} | <b>Skor:</b> {rec.get('score', 0)}/100 | <b>Güven:</b> {rec.get('confidence', '-')}
+                </div>
             </div>
             """
-        rec_section = f'<div class="section"><h3>Bugün Önerilen Hisseler ({len(recs)} Adet)</h3>{cards}</div>'
+        rec_html = f'<div class="section"><h3 style="color:#1a2e3e;">Güncel Öneriler</h3>{cards}</div>'
     else:
-        rec_section = '<div class="section"><p>Bugün kriterlere uygun hisse bulunamadı.</p></div>'
+        rec_html = '<div class="section"><p>Şu an kriterlere uygun hisse bulunamadı.</p></div>'
 
-    footer = """
+    # [span_2](start_span)Sabit footer ve Algoritmik Tarama Notu[span_2](end_span)
+    footer_html = """
     <div class="footer">
-        <p><strong>Not:</strong> Bu rapor "Algoritmik Tarama" sistemiyle rastgele seçilen veriler üzerinden üretilmiştir.</p>
-        <p>Yatırım tavsiyesi değildir. Borsa işlemleri risk içerir.</p>
+        <p><strong>Sistem Notu:</strong> Bu rapor, hisseleri belirli kriterlere göre otomatik seçen "Algoritmik Tarama" sistemi üzerine inşa edilmiştir.</p>
+        <p>Yatırım tavsiyesi değildir. Lütfen kendi risk analizinizi yapınız.</p>
     </div>
     """
 
-    full_html = f"<html><head>{css}</head><body><div class='container'>{header}{explanation_header}{mood_html}{rec_section}{footer}</div></body></html>"
-    return full_html
+    return f"<html><head>{css}</head><body><div class='container'>{header_html}{explanation_box}{mood_html}{rec_html}{footer_html}</div></body></html>"
 
 def send_email(html_body: str, chart_paths: list = None, subject: str = None) -> bool:
+    """SendGrid Secrets kullanarak mail gönderir."""
     if not SENDGRID_AVAILABLE:
-        print("X SendGrid paketi yüklü değil!")
+        print("X HATA: sendgrid paketi yüklü değil!")
+        return False
+
+    # [span_3](start_span)Secrets'tan veya Config'den verileri çek[span_3](end_span)
+    api_key = os.environ.get("SENDGRID_API_KEY") or config.SENDGRID_API_KEY
+    sender_email = os.environ.get("MAIL_SENDER") or config.MAIL_SENDER
+    # [span_4](start_span)Alıcı adresini isteğiniz üzerine sabitliyoruz[span_4](end_span)
+    recipient_email = "ahm.cagil@hotmail.com"
+
+    if not api_key:
+        print("X HATA: SENDGRID_API_KEY bulunamadı!")
         return False
 
     if subject is None:
-        subject = f"Borsa Analiz Raporu - {datetime.now().strftime('%d %m %Y')}"
-
-    api_key = os.environ.get("SENDGRID_API_KEY", config.SENDGRID_API_KEY)
-    # İsteğiniz üzerine alıcı adresi sabitlendi
-    recipient_email = "ahm.cagil@hotmail.com" 
-    sender_email = os.environ.get("MAIL_SENDER", config.MAIL_SENDER)
+        subject = f"Borsa Analiz Raporu - {datetime.now().strftime('%d.%m.%Y')}"
 
     sg = sendgrid.SendGridAPIClient(api_key=api_key)
-    from_email = Email(sender_email)
-    to_email = To(recipient_email)
-    content = Content("text/html", html_body)
-    mail = Mail(from_email, to_email, subject, content)
+    mail = Mail(
+        from_email=Email(sender_email),
+        to_emails=To(recipient_email),
+        subject=subject,
+        html_content=html_body
+    )
 
-    # Grafik ekleme mantığı
+    # [span_5](start_span)Grafikleri ekle[span_5](end_span)
     if chart_paths:
         for path in chart_paths:
             if os.path.exists(path):
                 with open(path, 'rb') as f:
-                    data = f.read()
-                    encoded = base64.b64encode(data).decode()
+                    data = base64.b64encode(f.read()).decode()
                     attachment = Attachment(
-                        FileContent(encoded),
+                        FileContent(data),
                         FileName(os.path.basename(path)),
                         FileType('image/png'),
                         Disposition('attachment')
@@ -124,13 +127,13 @@ def send_email(html_body: str, chart_paths: list = None, subject: str = None) ->
                     mail.add_attachment(attachment)
 
     try:
-        response = sg.client.mail.send.post(request_body=mail.get())
+        response = sg.send(mail)
         if response.status_code in [200, 201, 202]:
-            print(f"✔ Email başarıyla {recipient_email} adresine gönderildi!")
+            print(f"✔ Rapor başarıyla {recipient_email} adresine gönderildi!")
             return True
         else:
-            print(f"X SendGrid Hatası: {response.status_code}")
+            print(f"X SendGrid Hatası! Kod: {response.status_code}")
             return False
     except Exception as e:
-        print(f"X Gönderim Hatası: {e}")
+        print(f"X Gönderim sırasında hata oluştu: {e}")
         return False
