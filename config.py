@@ -1,6 +1,6 @@
 import os
 
-# API ANAHTARLARI - GitHub Secrets ile tam uyumlu
+# API ANAHTARLARI
 SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "")
 NEWS_API_KEY = os.environ.get("NEWS_API_KEY", "")
 ALPHA_VANTAGE_KEY = os.environ.get("ALPHA_VANTAGE_KEY", "")
@@ -9,7 +9,7 @@ ALPHA_VANTAGE_KEY = os.environ.get("ALPHA_VANTAGE_KEY", "")
 MAIL_SENDER = os.environ.get("MAIL_SENDER", "ahm.cagil@gmail.com")
 MAIL_RECIPIENT = os.environ.get("MAIL_RECIPIENT", "ahm.cagil@gmail.com")
 
-# HISSE LISTESI (Hatalı kodlar düzeltildi)
+# HISSE LISTESI - Yahoo Finance uyumlu düzeltilmiş liste
 TURKISH_STOCKS = [
     "THYAO.IS", "ASELS.IS", "AKBANK.IS", "ISCTR.IS", "GARAN.IS", 
     "AKSEN.IS", "TUPRS.IS", "BIMAS.IS", "ENKAI.IS", "SISE.IS", 
@@ -19,7 +19,7 @@ TURKISH_STOCKS = [
 GLOBAL_STOCKS = ["AAPL", "MSFT", "NVDA", "TSLA", "AMZN"]
 ALL_STOCKS = TURKISH_STOCKS + GLOBAL_STOCKS
 
-# ANALIZ PARAMETRELERI
+# ANALIZ AYARLARI
 FIBONACCI_LEVELS = [0.236, 0.382, 0.500, 0.618, 0.786]
 RSI_PERIOD = 14
 MACD_FAST, MACD_SLOW, MACD_SIGNAL = 12, 26, 9
