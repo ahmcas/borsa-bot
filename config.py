@@ -1,18 +1,21 @@
+# ============================================================
+# config.py — Tüm Ayarlar (SendGrid & Algoritmik Tarama)
+# ============================================================
 import os
 
 # --- API ANAHTARLARI ---
+# GitHub Secrets'tan okunur. Loglardaki 'attribute' hatasını bu satır çözer.
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "")
 NEWS_API_KEY = os.environ.get("NEWS_API_KEY", "")
 ALPHA_VANTAGE_KEY = os.environ.get("ALPHA_VANTAGE_KEY", "")
-# Bu satır SendGrid hatasını çözer
-SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", "") 
 
 # --- MAIL AYARLARI ---
-# İsteğiniz üzerine adresler sabitlendi
-MAIL_SENDER = os.environ.get("MAIL_SENDER", "ahm.cagilgmail.com")
+# Yeni güncellenen adresiniz: ahm.cagil@gmail.com
+MAIL_SENDER = os.environ.get("MAIL_SENDER", "ahm.cagil@gmail.com")
 MAIL_RECIPIENT = os.environ.get("MAIL_RECIPIENT", "ahm.cagil@gmail.com")
 
 # --- BORSALAR & HISSELER ---
-# Hatalı Yahoo Finance kodları (ISA, TUPAS vb.) düzeltildi
+# Yahoo Finance formatına uygun (ISA -> ISCTR, TUPAS -> TUPRS) düzeltilmiş liste.
 TURKISH_STOCKS = [
     "THYAO.IS", "ASELS.IS", "AKBANK.IS", "ISCTR.IS", "GARAN.IS", 
     "AKSEN.IS", "TUPRS.IS", "BIMAS.IS", "ENKAI.IS", "SISE.IS", 
@@ -30,8 +33,12 @@ MACD_FAST, MACD_SLOW, MACD_SIGNAL = 12, 26, 9
 BOLLINGER_PERIOD = 20
 SMA_SHORT, SMA_LONG = 20, 50
 
-# Skor ağırlıkları
-WEIGHT_TECHNICAL, WEIGHT_FUNDAMENTAL = 40, 30
-WEIGHT_NEWS_SENTIMENT, WEIGHT_MOMENTUM = 20, 10
+# Skor ağırlıkları (Toplam = 100)
+WEIGHT_TECHNICAL = 40   # Teknik analiz ağırlığı
+WEIGHT_FUNDAMENTAL = 30 # Temel analiz ağırlığı
+WEIGHT_NEWS_SENTIMENT = 20 # Haber analiz ağırlığı
+WEIGHT_MOMENTUM = 10    # Momentum ağırlığı
 
-DAILY_RUN_HOUR, DAILY_RUN_MINUTE = 9, 30
+# --- ZAMANLAMA ---
+DAILY_RUN_HOUR = 9
+DAILY_RUN_MINUTE = 30
