@@ -23,13 +23,12 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
         </div>
         
         <div style="background: #e7f3ff; border-left: 5px solid #2196F3; padding: 15px; margin: 20px;">
-            <strong>Puan Açıklaması:</strong> Bu puan, hissenin teknik gücünü 0-100 arasında özetler. 
-            Algoritmayı bilmeyen birinin bile hissenin durumunu tek bakışta anlamasını sağlayan bir göstergedir.
+            <strong>Puan Açıklaması:</strong> Bu puan, hisselerin teknik gücünü 0-100 arasında özetler. 
+            Algoritmayı bilmeyen birinin bile piyasa durumunu tek bakışta anlamasını sağlayan bir göstergedir.
         </div>
 
         <div style="padding: 0 20px;">
     """
-    
     if recs:
         for rec in recs:
             body += f"""
@@ -40,7 +39,7 @@ def generate_html_body(recommendations: dict, chart_paths: list) -> str:
             </div>
             """
     else:
-        body += "<p>Bugün uygun hisse bulunamadı.</p>"
+        body += "<p>Uygun alım sinyali bulunamadı.</p>"
 
     body += """
         </div>
